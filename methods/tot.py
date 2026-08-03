@@ -41,6 +41,7 @@ class ToTModel(DeepEvalBaseLLM):
         value_threshold:  float = 0.4,
         n_evals:          int   = 3,
         extract_final_answer: bool = True,
+        seed: int = 42
     ):
         self.model_name      = model_name
         self.search_strategy = search_strategy   # "bfs" or "dfs"
@@ -50,6 +51,7 @@ class ToTModel(DeepEvalBaseLLM):
         self.value_threshold = value_threshold   # vth in the paper
         self.n_evals         = n_evals           # number of value samples to average
         self.extract_final_answer = extract_final_answer
+        self.seed = seed
 
         # token usage — accumulates across the full generate() call
         # (matches base.py / cot.py pattern exactly)
@@ -459,7 +461,7 @@ REASONING CHAIN (best path found by Tree of Thoughts search):
                 "prompt": prompt,
                 "options": {
                     "temperature": temperature,
-                    "seed":        42,
+                    "seed": self.seed,
                 }
             }
             if format_arg:

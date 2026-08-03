@@ -35,7 +35,8 @@ class OtotussModel(DeepEvalBaseLLM):
         min_keep: int = 1,
         early_termination_threshold: float = 9.3,
         embedding_model: str = "all-MiniLM-L6-v2",
-        extract_final_answer: bool = True
+        extract_final_answer: bool = True,
+        seed: int = 42,
     ):
         self.model_name = model_name
         self.max_depth = max_depth
@@ -46,6 +47,7 @@ class OtotussModel(DeepEvalBaseLLM):
         self.early_termination_threshold = early_termination_threshold
         self.extract_final_answer = extract_final_answer
         self.token_usage = 0
+        self.seed = seed
         
         print(f"[OTOTUSS] Loading embedding model: {embedding_model}...")
         self.embedding_model = SentenceTransformer(embedding_model)
@@ -260,7 +262,7 @@ REASONING CHAIN (best path found by Tree of Thoughts search):
                 "prompt": prompt,
                 "options": {
                     "temperature": temperature,
-                    "seed":        42,
+                    "seed": self.seed,
                 }
             }
             if format_arg:

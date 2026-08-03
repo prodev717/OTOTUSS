@@ -73,6 +73,7 @@ class SSDPModel(DeepEvalBaseLLM):
         embedding_model:       str   = "all-MiniLM-L6-v2",  # Appendix A.6
         max_rollouts:          int   = 20,           # Rmax — paper default
         extract_final_answer:  bool  = True,
+        seed: int = 42
     ):
         self.model_name            = model_name
         self.tau                   = similarity_threshold
@@ -83,6 +84,7 @@ class SSDPModel(DeepEvalBaseLLM):
         self.lambda_es             = early_stopping_factor
         self.max_rollouts          = max_rollouts
         self.extract_final_answer  = extract_final_answer
+        self.seed = seed
 
        
         self.token_usage: int = 0
@@ -511,7 +513,7 @@ BEST REASONING CHAIN FOUND:
                 "prompt": prompt,
                 "options": {
                     "temperature": temperature,
-                    "seed":        42,
+                    "seed": self.seed,
                 }
             }
             if format_arg:

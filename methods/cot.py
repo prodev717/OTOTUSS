@@ -3,10 +3,11 @@ from deepeval.models.base_model import DeepEvalBaseLLM
 
 
 class CoTModel(DeepEvalBaseLLM):
-    def __init__(self, model_name: str, extract_final_answer: bool = True):
+    def __init__(self, model_name: str, extract_final_answer: bool = True, seed: int = 42):
         self.model_name = model_name
         self.extract_final_answer = extract_final_answer
         self.token_usage = 0
+        self.seed = seed
 
     def load_model(self):
         return self.model_name
@@ -20,8 +21,8 @@ class CoTModel(DeepEvalBaseLLM):
                 model=self.model_name,
                 prompt=cot_prompt,
                 options={
-                    "temperature": 0,
-                    "seed": 42,
+                    "temperature": 0.7,
+                    "seed": self.seed,
                 },
             )
             reasoning = res1["response"].strip()
@@ -47,7 +48,7 @@ class CoTModel(DeepEvalBaseLLM):
                     model=self.model_name,
                     prompt=extract_prompt,
                     format=format_arg,
-                    options={"temperature": 0, "seed": 42},
+                    options={"temperature": 0, "seed": self.seed},
                 )
                 self.token_usage += res2.get("prompt_eval_count", 0) + res2.get("eval_count", 0)
                 return schema.model_validate_json(res2["response"])
@@ -55,7 +56,7 @@ class CoTModel(DeepEvalBaseLLM):
                 res2 = ollama.generate(
                     model=self.model_name,
                     prompt=extract_prompt,
-                    options={"temperature": 0, "seed": 42},
+                    options={"temperature": 0, "seed": self.seed},
                 )
                 self.token_usage += res2.get("prompt_eval_count", 0) + res2.get("eval_count", 0)
                 return res2["response"].strip()
