@@ -12,8 +12,8 @@ from custom_metrics import relevancy_metric, creativity_metric, coherence_metric
 
 def main():
     # Setup reproducibility
-    random.seed(42)
-    np.random.seed(42)
+    random.seed(41)
+    np.random.seed(41)
     
     TARGET_MODEL = "qwen2.5:7b"
     
@@ -43,7 +43,7 @@ def main():
     
     print("\nInitializing model and embedding models...")
     # creative writing typically needs detailed output, so extract_final_answer=False
-    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=False)
+    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=False, seed=41)
     
     overall_start = time.time()
     

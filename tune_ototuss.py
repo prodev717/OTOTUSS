@@ -10,8 +10,8 @@ from methods.ototuss import OtotussModel
 
 def main():
     # Setup reproducibility
-    random.seed(42)
-    np.random.seed(42)
+    random.seed(41)
+    np.random.seed(41)
     
     TARGET_MODEL = "qwen2.5:7b"
     NUM_PROBLEMS = 3
@@ -22,8 +22,7 @@ def main():
     
     results = []
     
-    # Initialize benchmark
-    gsm8k = GSM8K(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS, enable_cot=False)
+    # Initialize benchmark inside the loop to avoid caching
     
     print("=" * 70)
     print("Starting Grid Search for OtotussModel")
@@ -32,13 +31,16 @@ def main():
     
     # Initialize model ONCE to avoid reloading the embedding model every iteration
     print("\nInitializing model and embedding models...")
-    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True)
+    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=41)
     
     overall_start = time.time()
     
     for sem_thresh in semantic_thresholds:
         for term_thresh in termination_thresholds:
             print(f"\nTesting semantic_threshold={sem_thresh}, early_termination_threshold={term_thresh}")
+            
+            # Instantiate fresh benchmark per run
+            gsm8k = GSM8K(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS, enable_cot=False)
             
             # Update thresholds on the existing model
             model.semantic_threshold = sem_thresh

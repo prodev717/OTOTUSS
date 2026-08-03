@@ -1,5 +1,5 @@
 from deepeval.models.base_model import DeepEvalBaseLLM
-from deepeval.benchmarks import GSM8K, BigBenchHard, BoolQ
+from deepeval.benchmarks import GSM8K, BoolQ
 
 class DummyModel(DeepEvalBaseLLM):
     def load_model(self):
@@ -18,7 +18,6 @@ model = DummyModel()
 
 benchmarks = [
     GSM8K(),
-    BigBenchHard(),
     BoolQ(),
 ]
 

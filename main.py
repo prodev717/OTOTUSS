@@ -17,8 +17,8 @@ from methods.ototuss import OtotussModel
 # Reproducibility
 # ============================================================
 
-random.seed(42)
-np.random.seed(42)
+random.seed(41)
+np.random.seed(41)
 
 
 # ============================================================
@@ -82,18 +82,9 @@ def run_benchmark(name, benchmark, model_name, target_model):
 # Benchmarks
 # ============================================================
 
-gsm8k = GSM8K(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS, enable_cot=False)
-# bbh = BigBenchHard(n_shots=N_SHOTS, enable_cot=False)
-boolq = BoolQ(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS)
-
-# benchmarks = [
-#     ("GSM8K", gsm8k),
-#     ("BBH", bbh),
-#     ("BoolQ", boolq)
-# ]
-benchmarks = [
-    ("GSM8K", gsm8k),
-    ("BoolQ", boolq)
+benchmark_classes = [
+    ("GSM8K", GSM8K),
+    ("BoolQ", BoolQ)
 ]
 
 # ============================================================
@@ -111,11 +102,18 @@ print("=" * 70)
 overall_start = time.time()
 results = []
 
-for name, benchmark in benchmarks:
+for name, benchmark_class in benchmark_classes:
     for model_name, target_model in models:
         print("\n" + "=" * 70)
         print(f"Evaluating {model_name} on {name}")
         print("=" * 70)
+        
+        # Instantiate fresh benchmark per model
+        if name == "GSM8K":
+            benchmark = benchmark_class(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS, enable_cot=False)
+        else:
+            benchmark = benchmark_class(n_problems=NUM_PROBLEMS, n_shots=N_SHOTS)
+            
         res = run_benchmark(name, benchmark, model_name, target_model)
         results.append(res)
 
