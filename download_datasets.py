@@ -1,4 +1,3 @@
-import ollama
 from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.benchmarks import GSM8K, BigBenchHard, BoolQ
 

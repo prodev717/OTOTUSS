@@ -1,3 +1,0 @@
-FROM qwen3:8b
-PARAMETER num_gpu 99
-PARAMETER num_ctx 2048

@@ -2,12 +2,16 @@ import time
 import random
 import numpy as np
 import ollama
+import csv
 
 from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.benchmarks import GSM8K, BigBenchHard, BoolQ
 
-from methods.cot import CoTModel
 from methods.base import BaseModel
+from methods.cot import CoTModel
+from methods.tot import ToTModel
+from methods.ssdp import SSDPModel
+from methods.ototuss import OtotussModel
 
 # ============================================================
 # Reproducibility
@@ -31,16 +35,20 @@ N_SHOTS = 0
 # ============================================================
 
 base_model = BaseModel(model_name=TARGET_MODEL)
-cot_model = CoTModel(model_name=TARGET_MODEL)
-models = [("Base Model", base_model), ("CoT Model", cot_model)]
+cot_model = CoTModel(model_name=TARGET_MODEL, extract_final_answer=True)
+tot_model = ToTModel(model_name=TARGET_MODEL, search_strategy="bfs", extract_final_answer=True)
+ssdp_model = SSDPModel(model_name=TARGET_MODEL, extract_final_answer=True)
+ototuss_model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True)
+
+models = [("Base Model", base_model), ("CoT Model", cot_model), ("ToT Model", tot_model), ("SSDP Model", ssdp_model), ("Ototuss Model", ototuss_model)]
 
 # ============================================================
 # Benchmark Runner
 # ============================================================
 
-def run_benchmark(name, benchmark):
+def run_benchmark(name, benchmark, model_name, target_model):
     print("\n" + "=" * 70)
-    print(f"Running {name}")
+    print(f"Running {name} with {model_name}")
     print("=" * 70)
 
     start_tokens = target_model.token_usage
@@ -50,15 +58,24 @@ def run_benchmark(name, benchmark):
 
     elapsed = time.time() - start_time
     used_tokens = target_model.token_usage - start_tokens
+    accuracy = benchmark.overall_score * 100
 
     print("\n" + "=" * 70)
-    print(f"{name} Results")
+    print(f"{name} Results for {model_name}")
     print("=" * 70)
-    print(f"Accuracy      : {benchmark.overall_score * 100:.2f}%")
+    print(f"Accuracy      : {accuracy:.2f}%")
     print(f"Total Time    : {elapsed:.2f} sec")
     print(f"Avg Time      : {elapsed / NUM_PROBLEMS:.2f} sec/problem")
     print(f"Avg Tokens    : {used_tokens / NUM_PROBLEMS:.2f} tokens/problem")
     print("=" * 70)
+
+    return {
+        "Benchmark": name,
+        "Method": model_name,
+        "Accuracy": f"{accuracy:.2f}%",
+        "Avg Time (s)": f"{elapsed / NUM_PROBLEMS:.2f}",
+        "Avg Tokens": f"{used_tokens / NUM_PROBLEMS:.2f}"
+    }
 
 
 # ============================================================
@@ -92,19 +109,28 @@ print(f"Few-shot    : {N_SHOTS}")
 print("=" * 70)
 
 overall_start = time.time()
+results = []
 
 for name, benchmark in benchmarks:
     for model_name, target_model in models:
         print("\n" + "=" * 70)
         print(f"Evaluating {model_name} on {name}")
         print("=" * 70)
-        run_benchmark(name, benchmark)
+        res = run_benchmark(name, benchmark, model_name, target_model)
+        results.append(res)
 
 overall_elapsed = time.time() - overall_start
+
+csv_filename = "results.csv"
+with open(csv_filename, "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["Benchmark", "Method", "Accuracy", "Avg Time (s)", "Avg Tokens"])
+    writer.writeheader()
+    writer.writerows(results)
 
 print("\n" + "=" * 70)
 print("All Benchmarks Completed")
 print("=" * 70)
 print(f"Total Time  : {overall_elapsed:.2f} sec")
-print(f"Total Tokens: {target_model.token_usage}")
+print(f"Total Tokens: {sum([m[1].token_usage for m in models])}")
+print(f"Results saved to {csv_filename}")
 print("=" * 70)
