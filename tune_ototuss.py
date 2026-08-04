@@ -14,7 +14,7 @@ def main():
     np.random.seed(41)
     
     TARGET_MODEL = "qwen2.5:7b"
-    NUM_PROBLEMS = 3
+    NUM_PROBLEMS = 10
     N_SHOTS = 0
     
     semantic_thresholds = [0.2, 0.5, 0.8]
