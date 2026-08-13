@@ -13,16 +13,16 @@ from custom_metrics import relevancy_metric, creativity_metric, coherence_metric
 import random
 import numpy as np
 
-random.seed(41)
-np.random.seed(41)
+random.seed(42)
+np.random.seed(42)
 
 
 def main():
     TARGET_MODEL = "qwen2.5:7b"
     
     print(f"Initializing generation models ({TARGET_MODEL})...")
-    ssdp_model = SSDPModel(model_name=TARGET_MODEL, extract_final_answer=False, seed=41)
-    ototuss_model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=False, seed=41)
+    ssdp_model = SSDPModel(model_name=TARGET_MODEL, extract_final_answer=False, seed=42)
+    ototuss_model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=False, seed=42)
     
     prompts = [
         "Write a short, emotional poem about a time traveler who falls in love with a Roman gladiator.",

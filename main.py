@@ -17,8 +17,8 @@ from methods.ototuss import OtotussModel
 # Reproducibility
 # ============================================================
 
-random.seed(41)
-np.random.seed(41)
+random.seed(42)
+np.random.seed(42)
 
 
 # ============================================================
@@ -34,11 +34,11 @@ N_SHOTS = 0
 # Initialize Model
 # ============================================================
 
-base_model = BaseModel(model_name=TARGET_MODEL, seed=41)
-cot_model = CoTModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=41)
-tot_model = ToTModel(model_name=TARGET_MODEL, search_strategy="bfs", extract_final_answer=True, seed=41)
-ssdp_model = SSDPModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=41)
-ototuss_model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=41)
+base_model = BaseModel(model_name=TARGET_MODEL, seed=42)
+cot_model = CoTModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=42)
+tot_model = ToTModel(model_name=TARGET_MODEL, search_strategy="bfs", extract_final_answer=True, seed=42)
+ssdp_model = SSDPModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=42)
+ototuss_model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=42)
 
 models = [("Base Model", base_model), ("CoT Model", cot_model), ("ToT Model", tot_model), ("SSDP Model", ssdp_model), ("Ototuss Model", ototuss_model)]
 
