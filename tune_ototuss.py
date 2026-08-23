@@ -10,8 +10,8 @@ from methods.ototuss import OtotussModel
 
 def main():
     # Setup reproducibility
-    random.seed(42)
-    np.random.seed(42)
+    random.seed(43)
+    np.random.seed(43)
     
     TARGET_MODEL = "qwen2.5:7b"
     NUM_PROBLEMS = 10
@@ -31,7 +31,7 @@ def main():
     
     # Initialize model ONCE to avoid reloading the embedding model every iteration
     print("\nInitializing model and embedding models...")
-    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=42)
+    model = OtotussModel(model_name=TARGET_MODEL, extract_final_answer=True, seed=43)
     
     overall_start = time.time()
     
