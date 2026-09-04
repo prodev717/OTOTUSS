@@ -1,0 +1,11 @@
+Benchmark,Method,Accuracy,Avg Time (s),Avg Tokens
+GSM8K,Base Model,34.00%,1.02,110.85
+GSM8K,CoT Model,89.00%,16.78,734.76
+GSM8K,ToT Model,31.00%,58.33,37969.28
+GSM8K,SSDP Model,36.00%,24.05,8564.78
+GSM8K,Ototuss Model,35.00%,12.76,2540.17
+BoolQ,Base Model,76.00%,0.84,181.72
+BoolQ,CoT Model,82.00%,42.76,1296.56
+BoolQ,ToT Model,84.00%,30.28,20660.92
+BoolQ,SSDP Model,84.00%,13.51,5119.42
+BoolQ,Ototuss Model,79.00%,13.57,3179.02
