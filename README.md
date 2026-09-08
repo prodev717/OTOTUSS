@@ -83,8 +83,6 @@ OTOTUSS is an inference-time optimization framework for tree-based reasoning tha
 
 6. **Early Termination & Synthesis**: If $\max_{t \in A_d} S_{\text{LLM}}(t) \ge \gamma$, search terminates early. The highest-scoring path is reconstructed and passed to the LLM for final answer synthesis.
 
----
-
 ### Theoretical Evaluation Reduction
 
 The theoretical evaluation reduction ratio $R_{\text{eval}}$ over standard Tree-of-Thoughts (ToT) is defined as:
