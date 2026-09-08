@@ -68,20 +68,30 @@ Existing literature addresses ToT efficiency from several orthogonal angles:
 
 ### Algorithmic Architecture
 
-OTOTUSS is an inference-time optimization for tree-based reasoning that eliminates unpromising candidates prior to expensive LLM prompt evaluations:
+OTOTUSS is an inference-time optimization framework for tree-based reasoning that eliminates unpromising candidates prior to expensive LLM prompt evaluations:
 
-1. **Dynamic Semantic Target Generation**: Given input problem $P$, an LLM prompt synthesizes a set $K = \{k_1, k_2, \ldots, k_q\}$ of $q \in [10, 15]$ semantic targets capturing core problem concepts and qualitative solution requirements (e.g., *sound deduction*, *feasibility*, *domain constraints*).
+1. **Dynamic Semantic Target Generation**: Given input problem $P$, an LLM prompt synthesizes a set $K = \{k_1, k_2, \dots, k_q\}$ of $q \in [10, 15]$ semantic targets capturing core problem concepts and qualitative solution requirements (e.g., *sound deduction*, *feasibility*, *domain constraints*).
 2. **Dense Vector Mapping**: A lightweight sentence encoder $E(\cdot)$ (such as `all-MiniLM-L6-v2`) pre-computes target vectors $\{E(k_i)\}_{i=1}^q$.
-3. **Candidate Expansion & Semantic Scoring**: At each depth $d \le D$, $m$ candidate thoughts are generated per active path. For candidate thought $t$, its problem-level semantic relevance $S_{\mathrm{sem}}(t)$ is determined by the maximum cosine similarity across all targets:
-   $$S_{\mathrm{sem}}(t) = \max_{k_i \in K} \frac{E(t)^\top E(k_i)}{\|E(t)\|_2 \|E(k_i)\|_2}$$
-4. **Adaptive Semantic Gating & Fallback**: A candidate qualifies for LLM evaluation only if $S_{\mathrm{sem}}(t) \ge \tau$. If fewer than $k_{\min}$ (`min_keep`) candidates meet $\tau$, the top $k_{\min}$ candidates by semantic score are retained, preventing catastrophic path collapse.
-5. **Contextual Evaluation & Beam Search**: Qualifying candidates are scored by the LLM in full reasoning context ($S_{\mathrm{LLM}}(t) \in [1, 10]$). The top $B$ candidates form the active set for depth $d+1$:
-   $$A_d = \operatorname{TopB}\left(\{t : S_{\mathrm{sem}}(t) \ge \tau \lor t \in \text{Fallback}\}, S_{\mathrm{LLM}}\right)$$
-6. **Early Termination & Synthesis**: If $\max_{t \in A_d} S_{\mathrm{LLM}}(t) \ge \gamma$, search terminates early. The highest-scoring path is reconstructed and passed to the LLM for final answer synthesis.
+3. **Candidate Expansion & Semantic Scoring**: At each depth $d \le D$, $m$ candidate thoughts are generated per active path. For candidate thought $t$, its problem-level semantic relevance $S_{\text{sem}}(t)$ is determined by the maximum cosine similarity across all targets:
 
-The theoretical evaluation reduction $R_{\mathrm{eval}}$ over standard ToT is:
-$$R_{\mathrm{eval}} = 1 - \frac{\sum_{d=1}^D r_d}{D \cdot B \cdot m}$$
-where $r_d$ denotes the count of candidates surviving the semantic gate at depth $d$.
+   $$S_{\text{sem}}(t) = \max_{k_i \in K} \frac{E(t)^\top E(k_i)}{\|E(t)\|_2 \|E(k_i)\|_2}$$
+
+4. **Adaptive Semantic Gating & Fallback**: A candidate qualifies for LLM evaluation only if $S_{\text{sem}}(t) \ge \tau$. If fewer than $k_{\min}$ (`min_keep`) candidates meet $\tau$, the top $k_{\min}$ candidates by semantic score are retained to prevent catastrophic path collapse.
+5. **Contextual Evaluation & Beam Search**: Qualifying candidates are scored by the LLM in full reasoning context ($S_{\text{LLM}}(t) \in [1, 10]$). The top $B$ candidates form the active set for depth $d+1$:
+
+   $$A_d = \text{TopB}\left(\{t : S_{\text{sem}}(t) \ge \tau \lor t \in \text{Fallback}\}, S_{\text{LLM}}\right)$$
+
+6. **Early Termination & Synthesis**: If $\max_{t \in A_d} S_{\text{LLM}}(t) \ge \gamma$, search terminates early. The highest-scoring path is reconstructed and passed to the LLM for final answer synthesis.
+
+---
+
+### Theoretical Evaluation Reduction
+
+The theoretical evaluation reduction ratio $R_{\text{eval}}$ over standard Tree-of-Thoughts (ToT) is defined as:
+
+$$R_{\text{eval}} = 1 - \frac{\sum_{d=1}^D r_d}{D \cdot B \cdot m}$$
+
+where $r_d$ denotes the total count of candidates surviving the semantic gate at depth $d$.
 
 ### Search Workflow
 
